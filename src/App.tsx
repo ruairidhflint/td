@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BsCircle, BsFillCheckCircleFill } from 'react-icons/bs';
+import axios from 'axios';
 
 import './App.css';
 
@@ -12,7 +13,7 @@ const dummyData: any[] = [
 ];
 
 function App() {
-  const [todos, setTodos] = useState(dummyData);
+  const [todos, setTodos] = useState<Todo[]>([]);
 
   const toggleCompleteState = (id: number) => {
     const updated = todos.map((x: Todo) => {
@@ -24,6 +25,12 @@ function App() {
     });
     setTodos(updated);
   };
+
+  useEffect(() => {
+    axios.get('/.netlify/functions/hello-world').then((res) => {
+      setTodos(res.data.data);
+    });
+  }, []);
 
   return (
     <div
