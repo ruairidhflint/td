@@ -1,4 +1,10 @@
-import { useState, useEffect } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { BsCircle, BsFillCheckCircleFill } from "react-icons/bs";
 import axios from "axios";
 
@@ -6,8 +12,43 @@ import "./App.css";
 
 function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [modal, setModal] = useState<boolean>(false);
+  const [input, setInput] = useState<string>("");
 
-  const toggleCompleteState = async (id: number) => {
+  const toggleModal = () => {
+    setModal(!modal);
+  };
+
+  const clearCompletedTodos = async () => {
+    const completed = todos.filter((x) => x.completed);
+    const notCompleted = todos.filter((x) => !x.completed);
+    const ids = completed.map((x) => x.id);
+    setTodos(notCompleted);
+    await axios.post("/.netlify/functions/clearRecords", JSON.stringify(ids), {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  };
+
+  const addNewTodo = (input: string) => {
+    axios
+      .post(
+        "/.netlify/functions/addNewRecord",
+        JSON.stringify({ todo: input }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((res) => setTodos([res.data, ...todos]))
+      .catch((err) => console.log(err))
+      .finally(() => setInput(""));
+    setModal(false);
+  };
+
+  const toggleCompleteState = async (id: string) => {
     const current = todos.find((x) => x.id === id)?.completed;
     const updated = todos.map((x: Todo) => {
       if (x.id === id) {
@@ -28,10 +69,23 @@ function App() {
     );
   };
 
+  const closeModalWithEscapeKey = useCallback((event: { key: string }) => {
+    if (event.key === "Escape") {
+      setModal(false);
+      setInput("");
+    }
+  }, []);
+
   useEffect(() => {
     axios.get("/.netlify/functions/getRecords").then((res) => {
       setTodos(res.data);
     });
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("keydown", closeModalWithEscapeKey, false);
+    return () =>
+      document.removeEventListener("keydown", closeModalWithEscapeKey, false);
   }, []);
 
   return (
@@ -39,7 +93,17 @@ function App() {
       className="w-[600px] my-0 mx-auto 
     mt-[50px]"
     >
-      <MenuArea />
+      {modal && (
+        <NewTodoModal
+          input={input}
+          setInput={setInput}
+          addNewTodo={addNewTodo}
+        />
+      )}
+      <MenuArea
+        clearCompletedTodos={clearCompletedTodos}
+        toggleModal={toggleModal}
+      />
       <div className="flex flex-col">
         {todos.map((todo) => (
           <TodoItem
@@ -57,24 +121,38 @@ function App() {
 
 export default App;
 
-function MenuArea() {
+function MenuArea({
+  toggleModal,
+  clearCompletedTodos,
+}: {
+  toggleModal: () => void;
+  clearCompletedTodos: () => void;
+}) {
   return (
-    <div className="flex justify-end items-center h-[80px] border-solid border-b-2 border-slate-100 mx-3">
+    <div className="flex justify-between items-center h-[100px] border-solid border-b-2 border-slate-100 mx-3">
+      <button
+        type="button"
+        className="inline-block px-6 py-2.5 bg-red-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-red-500 hover:shadow-lg focus:bg-red-500 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-red-500 active:shadow-lg transition duration-100 ease-in-out"
+        onClick={clearCompletedTodos}
+      >
+        Clear
+      </button>
       <button
         type="button"
         className="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-100 ease-in-out"
+        onClick={toggleModal}
       >
-        + Add New Task
+        Add New Task
       </button>
     </div>
   );
 }
 
 interface Todo {
-  id: number;
+  id: string;
   completed: boolean;
   todo: string;
-  toggle: (id: number) => void;
+  toggle: (id: string) => void;
 }
 
 function TodoItem({ completed, todo, toggle, id }: Todo) {
@@ -94,5 +172,49 @@ function TodoItem({ completed, todo, toggle, id }: Todo) {
         {todo}
       </p>
     </div>
+  );
+}
+
+function NewTodoModal({
+  input,
+  setInput,
+  addNewTodo,
+}: {
+  input: string;
+  setInput: Dispatch<SetStateAction<string>>;
+  addNewTodo: (input: string) => void;
+}) {
+  const handleForm = (e: any) => {
+    e.preventDefault();
+    addNewTodo(input);
+  };
+  return (
+    <>
+      <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+        <div className="relative w-auto my-6 mx-auto max-w-3xl min-w-[600px]">
+          <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+            <form className="w-full px-6 py-8" onSubmit={handleForm}>
+              <div className="flex items-center border-b border-blue-600 py-2">
+                <input
+                  className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+                  type="text"
+                  placeholder="Add new task"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  autoFocus
+                />
+                <button
+                  className="bg-blue-600 hover:bg-blue-800 border-blue-600 hover:border-blue-800 text-sm border-4 text-white py-1 px-6 rounded"
+                  type="submit"
+                >
+                  Add
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div className="opacity-50 fixed inset-0 z-40 bg-black"></div>
+    </>
   );
 }

@@ -5,7 +5,7 @@ export const handler: Handler = async () => {
   const records = await base("Table 1")
     .select({
       filterByFormula: "NOT({status} = 'deleted')",
-      sort: [{ field: "created_at", direction: "asc" }],
+      sort: [{ field: "created_at", direction: "desc" }],
     })
     .firstPage();
 
