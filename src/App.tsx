@@ -1,34 +1,36 @@
-import { useState, useEffect } from 'react';
-import { BsCircle, BsFillCheckCircleFill } from 'react-icons/bs';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import { BsCircle, BsFillCheckCircleFill } from "react-icons/bs";
+import axios from "axios";
 
-import './App.css';
-
-const dummyData: any[] = [
-  { id: 1, complete: false, todo: 'Clippers on beard' },
-  { id: 2, complete: false, todo: 'Shave' },
-  { id: 3, complete: false, todo: 'Find shirt' },
-  { id: 4, complete: false, todo: 'Clean/Sort Trousers/Outfit for tomorrow' },
-  { id: 5, complete: false, todo: 'Pack bag for tomorrow' },
-];
+import "./App.css";
 
 function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
 
-  const toggleCompleteState = (id: number) => {
+  const toggleCompleteState = async (id: number) => {
+    const current = todos.find((x) => x.id === id)?.completed;
     const updated = todos.map((x: Todo) => {
       if (x.id === id) {
-        return { ...x, complete: !x.complete };
+        return { ...x, completed: !current };
       }
 
       return x;
     });
     setTodos(updated);
+    await axios.post(
+      "/.netlify/functions/changeCompletedStatus",
+      JSON.stringify({ id, completed: JSON.stringify(!current) }),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   };
 
   useEffect(() => {
-    axios.get('/.netlify/functions/hello-world').then((res) => {
-      setTodos(res.data.data);
+    axios.get("/.netlify/functions/getRecords").then((res) => {
+      setTodos(res.data);
     });
   }, []);
 
@@ -40,7 +42,13 @@ function App() {
       <MenuArea />
       <div className="flex flex-col">
         {todos.map((todo) => (
-          <TodoItem complete={todo.complete} id={todo.id} toggle={toggleCompleteState} todo={todo.todo} key={todo.id} />
+          <TodoItem
+            completed={todo.completed}
+            id={todo.id}
+            toggle={toggleCompleteState}
+            todo={todo.todo}
+            key={todo.id}
+          />
         ))}
       </div>
     </div>
@@ -64,19 +72,27 @@ function MenuArea() {
 
 interface Todo {
   id: number;
-  complete: boolean;
+  completed: boolean;
   todo: string;
   toggle: (id: number) => void;
 }
 
-function TodoItem({ complete, todo, toggle, id }: Todo) {
+function TodoItem({ completed, todo, toggle, id }: Todo) {
   return (
     <div
       onClick={() => toggle(id)}
       className="flex items-center py-[20px] border-solid border-b-2 border-slate-100 mx-3 text-slate-800 "
     >
-      <div className={`w-[5%] ${complete && 'opacity-25'}`}>{complete ? <BsFillCheckCircleFill /> : <BsCircle />}</div>
-      <p className={`pl-2 w-[95%] ${complete && 'opacity-25 line-through'} cursor-pointer`}>{todo}</p>
+      <div className={`w-[5%] ${completed && "opacity-25"}`}>
+        {completed ? <BsFillCheckCircleFill /> : <BsCircle />}
+      </div>
+      <p
+        className={`pl-2 w-[95%] ${
+          completed && "opacity-25 line-through"
+        } cursor-pointer`}
+      >
+        {todo}
+      </p>
     </div>
   );
 }

@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "@netlify/functions": "^1.0.0",
+    "airtable": "^0.11.4",
     "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-icons": "^4.4.0"
