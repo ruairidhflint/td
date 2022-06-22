@@ -25,6 +25,11 @@ function App() {
     const completed = todos.filter((x) => x.completed);
     const notCompleted = todos.filter((x) => !x.completed);
     const ids = completed.map((x) => x.id);
+
+    if (!ids.length) {
+      return;
+    }
+
     setTodos(notCompleted);
     try {
       await axios.post(

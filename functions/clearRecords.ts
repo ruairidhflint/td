@@ -4,6 +4,13 @@ import { base } from "../config/airtable";
 export const handler: Handler = async (event) => {
   try {
     const ids: string[] = event.body ? JSON.parse(event.body) : {};
+
+    if (!ids.length) {
+      return {
+        statusCode: 204,
+      };
+    }
+
     const filesToBeDeleted = ids.map((id) => ({
       id,
       fields: {
