@@ -7,6 +7,7 @@ import {
 } from "react";
 import { BsCircle, BsFillCheckCircleFill } from "react-icons/bs";
 import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
 import "./App.css";
 
@@ -24,11 +25,19 @@ function App() {
     const notCompleted = todos.filter((x) => !x.completed);
     const ids = completed.map((x) => x.id);
     setTodos(notCompleted);
-    await axios.post("/.netlify/functions/clearRecords", JSON.stringify(ids), {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    try {
+      await axios.post(
+        "/.netlify/functions/clearRecords",
+        JSON.stringify(ids),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch {
+      toast.error("Error clearing tasks", { position: "bottom-center" });
+    }
   };
 
   const addNewTodo = (input: string) => {
@@ -43,7 +52,9 @@ function App() {
         }
       )
       .then((res) => setTodos([res.data, ...todos]))
-      .catch((err) => console.log(err))
+      .catch(() =>
+        toast.error("Error creating task", { position: "bottom-center" })
+      )
       .finally(() => setInput(""));
     setModal(false);
   };
@@ -58,15 +69,19 @@ function App() {
       return x;
     });
     setTodos(updated);
-    await axios.post(
-      "/.netlify/functions/changeCompletedStatus",
-      JSON.stringify({ id, completed: JSON.stringify(!current) }),
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    try {
+      await axios.post(
+        "/.netlify/functions/changeCompletedStatus",
+        JSON.stringify({ id, completed: JSON.stringify(!current) }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch {
+      toast.error("Error updating task", { position: "bottom-center" });
+    }
   };
 
   const closeModalWithEscapeKey = useCallback((event: { key: string }) => {
@@ -77,9 +92,16 @@ function App() {
   }, []);
 
   useEffect(() => {
-    axios.get("/.netlify/functions/getRecords").then((res) => {
-      setTodos(res.data);
-    });
+    axios
+      .get("/.netlify/functions/getRecords")
+      .then((res) => {
+        setTodos(res.data);
+      })
+      .catch(() =>
+        toast.error("Error retrieving tasks", { position: "bottom-center" })
+      );
+
+    return () => {};
   }, []);
 
   useEffect(() => {
@@ -115,6 +137,20 @@ function App() {
           />
         ))}
       </div>
+      <Toaster
+        toastOptions={{
+          error: {
+            icon: undefined,
+            style: {
+              background: "#F47174",
+              color: "#fff",
+              width: "300px",
+              fontSize: "1rem",
+              padding: "0.5rem",
+            },
+          },
+        }}
+      />
     </div>
   );
 }
