@@ -1,7 +1,9 @@
 import { Handler } from "@netlify/functions";
 import { base } from "../config/airtable";
 
-export const handler: Handler = async (event) => {
+export const handler: Handler = async (
+  event
+): Promise<{ statusCode: 204 | 202 | 500; body?: string }> => {
   try {
     const ids: string[] = event.body ? JSON.parse(event.body) : {};
 
@@ -11,12 +13,13 @@ export const handler: Handler = async (event) => {
       };
     }
 
-    const filesToBeDeleted = ids.map((id) => ({
-      id,
-      fields: {
-        status: "deleted",
-      },
-    }));
+    const filesToBeDeleted: { id: string; fields: { status: "deleted" } }[] =
+      ids.map((id) => ({
+        id,
+        fields: {
+          status: "deleted",
+        },
+      }));
 
     await base("Table 1").update(filesToBeDeleted);
 

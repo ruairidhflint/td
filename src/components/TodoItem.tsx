@@ -1,6 +1,16 @@
 import { BsCircle, BsFillCheckCircleFill } from "react-icons/bs";
+import { Todo } from "../../types";
 
-export function TodoItem({ completed, todo, toggle, id }: any): JSX.Element {
+interface TodoDisplay extends Todo {
+  toggle: (id: string) => Promise<void>;
+}
+
+export function TodoItem({
+  completed,
+  todo,
+  toggle,
+  id,
+}: TodoDisplay): JSX.Element {
   return (
     <div
       onClick={() => toggle(id)}

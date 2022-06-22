@@ -6,7 +6,7 @@ import { MenuArea } from "./components/MenuArea";
 import { TodoItem } from "./components/TodoItem";
 import { NewTodoModal } from "./components/NewTodoModal";
 import { Spinner } from "./components/Spinner";
-import "./App.css";
+import { Todo } from "../types";
 
 function App(): JSX.Element {
   const [todos, setTodos] = useState<any[]>([]);
@@ -14,14 +14,14 @@ function App(): JSX.Element {
   const [input, setInput] = useState<string>("");
   const [loading, setLoading] = useState<string | null>("loading");
 
-  const toggleModal = () => {
+  const toggleModal = (): void => {
     setModal(!modal);
   };
 
-  const clearCompletedTodos = async () => {
-    const completed = todos.filter((x) => x.completed);
-    const notCompleted = todos.filter((x) => !x.completed);
-    const ids = completed.map((x) => x.id);
+  const clearCompletedTodos = async (): Promise<void> => {
+    const completed: Todo[] = todos.filter((x) => x.completed);
+    const notCompleted: Todo[] = todos.filter((x) => !x.completed);
+    const ids: string[] = completed.map((x) => x.id);
 
     if (!ids.length) {
       return;
@@ -43,7 +43,7 @@ function App(): JSX.Element {
     }
   };
 
-  const addNewTodo = (input: string) => {
+  const addNewTodo = (input: string): void => {
     setLoading("posting");
     axios
       .post(
@@ -66,16 +66,18 @@ function App(): JSX.Element {
       });
   };
 
-  const toggleCompleteState = async (id: string) => {
-    const current = todos.find((x) => x.id === id)?.completed;
-    const updated = todos.map((x) => {
+  const toggleCompleteState = async (id: string): Promise<void> => {
+    const current: Todo | undefined = todos.find((x) => x.id === id)?.completed;
+    const updated: Todo[] = todos.map((x) => {
       if (x.id === id) {
         return { ...x, completed: !current };
       }
 
       return x;
     });
+
     setTodos(updated);
+
     try {
       await axios.post(
         "/.netlify/functions/changeCompletedStatus",

@@ -1,7 +1,10 @@
 import { Handler } from "@netlify/functions";
 import { base } from "../config/airtable";
 
-export const handler: Handler = async () => {
+export const handler: Handler = async (): Promise<{
+  statusCode: 200 | 500;
+  body: string;
+}> => {
   try {
     const records = await base("Table 1")
       .select({

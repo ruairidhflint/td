@@ -1,8 +1,11 @@
-### TODO
+What types do I have?
 
-- Wire up Netlify functions with Airtable
-- Pull data from Airtable
-- Allow completed/incompleted to be marked on DB
-- Allow todo deletion on DB
-- Create add new todo modal
-- Add ability to upload todos to DB
+The fundamental Todo type which is displayed and then subsequently saved
+
+interface Todo {
+todo: string;
+completed: string | boolean;
+id: string;
+status?: string | boolean;
+created_at?: string;
+}
