@@ -1,4 +1,4 @@
-const { schedule, Handler } = require("@netlify/functions");
+const { schedule } = require("@netlify/functions");
 import { base } from "../config/airtable";
 
 const handler = async (): Promise<{
@@ -13,7 +13,7 @@ const handler = async (): Promise<{
       })
       .firstPage();
 
-    const ids = records.map((record) => record.id);
+    const ids: string[] = records.map((record) => record.id);
 
     for (const id of ids) {
       await base("Table 1").destroy(id);
