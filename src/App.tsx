@@ -100,6 +100,15 @@ function App(): JSX.Element {
     }
   }, []);
 
+  const openModalWithControlK = useCallback(
+    (event: { key: string; ctrlKey: boolean }) => {
+      if (event.key === "k" && event.ctrlKey && !modal) {
+        setModal(true);
+      }
+    },
+    []
+  );
+
   useEffect(() => {
     axios
       .get("/.netlify/functions/getRecords")
@@ -116,8 +125,11 @@ function App(): JSX.Element {
 
   useEffect(() => {
     document.addEventListener("keydown", closeModalWithEscapeKey, false);
-    return () =>
+    document.addEventListener("keydown", openModalWithControlK, false);
+    return () => {
       document.removeEventListener("keydown", closeModalWithEscapeKey, false);
+      document.removeEventListener("keydown", openModalWithControlK, false);
+    };
   }, []);
 
   if (loading === "loading") {
