@@ -30,4 +30,4 @@ const handler = async (): Promise<{
   }
 };
 
-module.exports.handler = schedule("0 * * * *", handler);
+module.exports.handler = schedule("@daily", handler);
