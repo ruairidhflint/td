@@ -1,0 +1,44 @@
+import { Handler } from "@netlify/functions";
+import { v4 } from "uuid";
+import { base } from "../config/airtable";
+
+export const handler: Handler = async (
+  event
+): Promise<{
+  statusCode: 200 | 401 | 500;
+  body: string;
+}> => {
+  try {
+    console.log(event);
+    const submittedPassword = JSON.parse(event.body as string);
+    const records = await base("Table 2")
+      .select({
+        maxRecords: 1,
+      })
+      .firstPage();
+
+    const correctPassword = records[0].fields.Password;
+
+    if (correctPassword === submittedPassword) {
+      const browserUUID = v4();
+      await base("Table 3").create({
+        browserUUID,
+      });
+      return {
+        statusCode: 200,
+        body: JSON.stringify(browserUUID),
+      };
+    } else {
+      return {
+        statusCode: 401,
+        body: JSON.stringify("Invalid credentials"),
+      };
+    }
+  } catch (err) {
+    console.log(err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify(err),
+    };
+  }
+};
