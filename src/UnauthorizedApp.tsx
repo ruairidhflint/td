@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 
-function UnauthorizedApp(): JSX.Element {
+function UnauthorizedApp({ setCookie }: any): JSX.Element {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const passwordRef = useRef<HTMLInputElement>(null);
   const submitPassword = async (e: any) => {
@@ -18,7 +18,7 @@ function UnauthorizedApp(): JSX.Element {
           },
         }
       );
-      console.log(response.data);
+      setCookie(response.data);
     } catch (err: any) {
       const status = err.response.status;
       if (status === 401) {

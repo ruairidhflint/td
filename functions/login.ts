@@ -9,7 +9,6 @@ export const handler: Handler = async (
   body: string;
 }> => {
   try {
-    console.log(event);
     const submittedPassword = JSON.parse(event.body as string);
     const records = await base("Table 2")
       .select({
@@ -35,7 +34,6 @@ export const handler: Handler = async (
       };
     }
   } catch (err) {
-    console.log(err);
     return {
       statusCode: 500,
       body: JSON.stringify(err),
