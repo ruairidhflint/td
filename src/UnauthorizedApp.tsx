@@ -30,9 +30,9 @@ function UnauthorizedApp({ setCookie }: any): JSX.Element {
     }
   };
   return (
-    <div className="absolute inset-0">
-      <div className="grid h-screen place-items-center">
-        <div className="relative w-auto my-6 mx-auto min-w-[85%] md:min-w-[60%] xl:min-w-[25%]">
+    <>
+      <div className="grid h-[80vh] place-items-center">
+        <div className="relative w-auto my-6 mx-auto min-w-[80%] md:min-w-[60%] xl:min-w-[25%]">
           <form className="w-full px-6 py-8" onSubmit={submitPassword}>
             <div className="flex items-center border-b border-blue-600 py-2">
               <input
@@ -69,7 +69,7 @@ function UnauthorizedApp({ setCookie }: any): JSX.Element {
           },
         }}
       />
-    </div>
+    </>
   );
 }
 
