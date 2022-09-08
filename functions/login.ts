@@ -1,5 +1,6 @@
 import { Handler } from "@netlify/functions";
 import { v4 } from "uuid";
+import { compare } from "bcrypt";
 import { base } from "../config/airtable";
 
 export const handler: Handler = async (
@@ -16,9 +17,10 @@ export const handler: Handler = async (
       })
       .firstPage();
 
-    const correctPassword = records[0].fields.Password;
+    const password = records[0].fields.Password;
+    const isValid = await compare(submittedPassword, password);
 
-    if (correctPassword === submittedPassword) {
+    if (isValid) {
       const browserUUID = v4();
       await base("Auth").create({
         browserUUID,

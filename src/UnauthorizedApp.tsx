@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 
-function UnauthorizedApp({ setCookie }: any): JSX.Element {
+function UnauthorizedApp({ login }: any): JSX.Element {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const passwordRef = useRef<HTMLInputElement>(null);
   const submitPassword = async (e: any) => {
@@ -18,7 +18,7 @@ function UnauthorizedApp({ setCookie }: any): JSX.Element {
           },
         }
       );
-      setCookie(response.data);
+      login(response.data);
     } catch (err: any) {
       const status = err.response.status;
       if (status === 401) {

@@ -2,12 +2,17 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import AuthorizedApp from "./AuthorizedApp";
+import { Spinner } from "./components/Spinner";
 import UnauthorizedApp from "./UnauthorizedApp";
 
 const cookies = new Cookies();
 
 const App = () => {
-  const [cookie, setCookie] = useState(null);
+  const [cookie, setCookie] = useState<null | string | boolean>(null);
+  const login = (id: string) => {
+    setCookie(id);
+    cookies.set("auth", id);
+  };
   useEffect(() => {
     const authCookie = cookies.get("auth");
     if (authCookie) {
@@ -20,9 +25,22 @@ const App = () => {
         setCookie(authCookie);
       };
       validate();
+    } else {
+      setCookie(false);
     }
   }, []);
-  return cookie ? <AuthorizedApp /> : <UnauthorizedApp setCookie={setCookie} />;
+  if (cookie === null) {
+    return (
+      <div
+        className="max-w-[650px] my-0 mx-auto 
+  mt-[50px] flex justify-center"
+      >
+        <Spinner />
+      </div>
+    );
+  }
+
+  return cookie ? <AuthorizedApp /> : <UnauthorizedApp login={login} />;
 };
 
 export default App;
