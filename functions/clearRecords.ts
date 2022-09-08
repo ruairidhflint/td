@@ -21,7 +21,7 @@ export const handler: Handler = async (
         },
       }));
 
-    await base("Table 1").update(filesToBeDeleted);
+    await base("Tasks").update(filesToBeDeleted);
 
     return {
       statusCode: 202,

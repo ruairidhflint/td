@@ -11,7 +11,7 @@ export const handler: Handler = async (
         ? JSON.parse(event.body).todo
         : "";
 
-    const newRecord = await base("Table 1").create({
+    const newRecord = await base("Tasks").create({
       todo,
       completed: "false",
       status: "active",

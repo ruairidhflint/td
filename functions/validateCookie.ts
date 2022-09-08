@@ -9,7 +9,7 @@ export const handler: Handler = async (
 }> => {
   try {
     const cookie = JSON.parse(event.body as string);
-    const records = await base("Table 3")
+    const records = await base("Auth")
       .select({
         maxRecords: 1,
         filterByFormula: `{browserUUID} = '${cookie}'`,

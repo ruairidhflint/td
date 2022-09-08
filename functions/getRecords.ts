@@ -6,7 +6,7 @@ export const handler: Handler = async (): Promise<{
   body: string;
 }> => {
   try {
-    const records = await base("Table 1")
+    const records = await base("Tasks")
       .select({
         filterByFormula: "NOT({status} = 'deleted')",
         sort: [{ field: "created_at", direction: "desc" }],

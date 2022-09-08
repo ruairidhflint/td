@@ -9,7 +9,7 @@ export const handler: Handler = async (
       ? JSON.parse(event.body)
       : {};
 
-    await base("Table 1").update([
+    await base("Tasks").update([
       {
         id: body.id,
         fields: {

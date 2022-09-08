@@ -10,7 +10,7 @@ export const handler: Handler = async (
 }> => {
   try {
     const submittedPassword = JSON.parse(event.body as string);
-    const records = await base("Table 2")
+    const records = await base("Password")
       .select({
         maxRecords: 1,
       })
@@ -20,7 +20,7 @@ export const handler: Handler = async (
 
     if (correctPassword === submittedPassword) {
       const browserUUID = v4();
-      await base("Table 3").create({
+      await base("Auth").create({
         browserUUID,
       });
       return {

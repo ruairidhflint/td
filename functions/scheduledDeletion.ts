@@ -6,7 +6,7 @@ const handler = async (): Promise<{
   body?: string;
 }> => {
   try {
-    const records = await base("Table 1")
+    const records = await base("Tasks")
       .select({
         filterByFormula: "NOT({status} = 'active')",
         sort: [{ field: "created_at", direction: "desc" }],
@@ -16,7 +16,7 @@ const handler = async (): Promise<{
     const ids: string[] = records.map((record) => record.id);
 
     for (const id of ids) {
-      await base("Table 1").destroy(id);
+      await base("Tasks").destroy(id);
     }
 
     return {
