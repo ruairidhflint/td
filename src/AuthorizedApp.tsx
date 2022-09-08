@@ -6,9 +6,10 @@ import { MenuArea } from "./components/MenuArea";
 import { TodoItem } from "./components/TodoItem";
 import { NewTodoModal } from "./components/NewTodoModal";
 import { Spinner } from "./components/Spinner";
+import { Logout } from "./components/Logout";
 import { Todo } from "../types";
 
-function AuthorizedApp(): JSX.Element {
+function AuthorizedApp({ logout }: any): JSX.Element {
   const [todos, setTodos] = useState<any[]>([]);
   const [modal, setModal] = useState<boolean>(false);
   const [input, setInput] = useState<string>("");
@@ -148,6 +149,7 @@ function AuthorizedApp(): JSX.Element {
       className="max-w-[650px] my-0 mx-auto 
     mt-[50px] px-[25px]"
     >
+      <Logout logout={logout} />
       {modal && (
         <NewTodoModal
           input={input}

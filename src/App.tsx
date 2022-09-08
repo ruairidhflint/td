@@ -9,10 +9,22 @@ const cookies = new Cookies();
 
 const App = () => {
   const [cookie, setCookie] = useState<null | string | boolean>(null);
+
   const login = (id: string) => {
     setCookie(id);
     cookies.set("auth", id);
   };
+
+  const logout = () => {
+    axios.post("/.netlify/functions/logout", cookie, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    cookies.remove("auth");
+    setCookie(false);
+  };
+
   useEffect(() => {
     const authCookie = cookies.get("auth");
     if (authCookie) {
@@ -40,7 +52,11 @@ const App = () => {
     );
   }
 
-  return cookie ? <AuthorizedApp /> : <UnauthorizedApp login={login} />;
+  return cookie ? (
+    <AuthorizedApp logout={logout} />
+  ) : (
+    <UnauthorizedApp login={login} />
+  );
 };
 
 export default App;
