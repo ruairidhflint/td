@@ -43,10 +43,7 @@ const App = () => {
   }, []);
   if (cookie === null) {
     return (
-      <div
-        className="max-w-[650px] my-0 mx-auto 
-  mt-[50px] flex justify-center"
-      >
+      <div className="max-w-[650px] my-0 mx-auto mt-[50px] flex justify-center">
         <Spinner />
       </div>
     );

@@ -15,7 +15,7 @@ export const handler: Handler = async (): Promise<{
 
     const sanitizeRecords = records.map((record) => ({
       id: record.id,
-      completed: record.fields.completed === "true" ? true : false,
+      completed: record.fields.completed === "true",
       todo: record.fields.todo,
     }));
 

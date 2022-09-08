@@ -1,5 +1,5 @@
-const { schedule } = require("@netlify/functions");
 import { base } from "../config/airtable";
+const { schedule } = require("@netlify/functions");
 
 const handler = async (): Promise<{
   statusCode: 200 | 500;

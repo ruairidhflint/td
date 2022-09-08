@@ -135,20 +135,14 @@ function AuthorizedApp({ logout }: any): JSX.Element {
 
   if (loading === "loading") {
     return (
-      <div
-        className="max-w-[650px] my-0 mx-auto 
-  mt-[50px] flex justify-center"
-      >
+      <div className="max-w-[650px] my-0 mx-auto mt-[50px] flex justify-center">
         <Spinner />
       </div>
     );
   }
 
   return (
-    <div
-      className="max-w-[650px] my-0 mx-auto 
-    mt-[50px] px-[25px]"
-    >
+    <div className="max-w-[650px] my-0 mx-auto mt-[50px] px-[25px]">
       <Logout logout={logout} />
       {modal && (
         <NewTodoModal
