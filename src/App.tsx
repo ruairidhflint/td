@@ -12,7 +12,7 @@ const App = () => {
 
   const login = (id: string) => {
     setCookie(id);
-    cookies.set("auth", id);
+    cookies.set("auth", id, { expires: new Date('2032-01-01') });
   };
 
   const logout = () => {
